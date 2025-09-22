@@ -2,7 +2,7 @@
  * @Description: 无锡诺亚自动化滚轴的控制
  * @Author: BiChunkai 321521004@qq.com
  * @Date: 2025-09-19 15:52:37
- * @LastEditTime: 2025-09-22 10:06:03
+ * @LastEditTime: 2025-09-22 13:22:47
  * @FilePath: /NuoYa_SDK/nuoya_sdk/nuoyaSDK.c
  *
  * Copyright (c) 2025 by BiChunkai 321521004@qq.com, All Rights Reserved.
@@ -104,10 +104,10 @@ DriverError NuoyaSDK_stop(int portIndex, int timeout_ms)
 
     if (n == sizeof(recv_data))
     {
-        printf("Received frame: ");
-        for(int i=0;i<4;i++) printf("%02X ", recv_data[i]);
-        printf("\n");
-        return (DriverError)recv_data[3]; // 第4字节错误码
+        // printf("Received frame: ");
+        // for(int i=0;i<4;i++) printf("%02X ", recv_data[i]);
+        // printf("\n");
+        return (DriverError)recv_data[2]; // 第3字节错误码
     }
     else if (n == 0)
     {
@@ -150,10 +150,10 @@ DriverError NuoyaSDK_rotate(int portIndex, int dir, int speed, int timeout_ms)
 
     if(n == sizeof(recv_data))
     {
-        printf("Received frame: ");
-        for(int i=0;i<4;i++) printf("%02X ", recv_data[i]);
-        printf("\n");
-        return (DriverError)recv_data[3]; // 第4字节错误码
+        // printf("Received frame: ");
+        // for(int i=0;i<4;i++) printf("%02X ", recv_data[i]);
+        // printf("\n");
+        return (DriverError)recv_data[2]; // 第3字节错误码
     }
     else if(n == 0)
     {
@@ -172,6 +172,12 @@ DriverError NuoyaSDK_rotate(int portIndex, int dir, int speed, int timeout_ms)
     }
 }
 
+void NuoyaSDK_runControl(int portIndex)
+{
+    unsigned char send_data[8] = {0x8A, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+
+    comWrite(portIndex, (const char*)send_data, sizeof(send_data)); 
+}
 
 ///////////////////////////////////////////////////////////////////
                         //  第一版用循环查看接受情况

@@ -3,7 +3,7 @@
  * @Author: BiChunkai 321521004@qq.com
  * @node: 兼容C、C++，linux版本
  * @Date: 2025-09-19 15:52:37
- * @LastEditTime: 2025-09-22 09:41:22
+ * @LastEditTime: 2025-09-22 13:22:31
  * @FilePath: /NuoYa_SDK/nuoya_sdk/nuoyaSDK.h
  * 
  * Copyright (c) 2025 by BiChunkai 321521004@qq.com, All Rights Reserved. 
@@ -76,11 +76,19 @@ DriverError NuoyaSDK_stop(int portIndex, int timeout_ms);
  * @brief rotate the robot
  * 
  * @param portIndex port index
- * @param dir direction, 0: 正转, 1: 反转
+ * @param dir direction, 0: 正转, 1: 反转【从接线地方参考，正转逆时针，反转顺时针】
  * @param speed speed, 速度值*10*2/辊筒减速比rpm
  * @return DriverError error code
  */
 DriverError NuoyaSDK_rotate(int portIndex, int dir, int speed, int timeout_ms);
+
+/**
+ * @brief send control message
+ * 
+ * @param portIndex 
+ */
+void NuoyaSDK_runControl(int portIndex);
+
 
 #ifdef __cplusplus
 }
