@@ -9,7 +9,6 @@
 5. 获取返回错误码，支持多种错误解析
 6. 发送滚轴控制参数
 7. 设置地址命令，默认1地址，需上电30s内设置【基本不需要设置，已经设置好】
-* 未提供设置驱动卡地址功能，默认地址为0x01
 
 【这个滚轴控制分两部分，首先需要先设置参数，
 设置参数发送之后会返回设置参数的反馈信息，反馈无问题之后方可发送控制参数命令滚筒运动】
@@ -21,10 +20,13 @@
 - 断开端口：`bool NuoyaSDK_Disconnect(int portIndex);`
 - 停止滚轴：`DriverError NuoyaSDK_stop(int portIndex, int timeout_ms);`
 - 滚轴旋转：`DriverError NuoyaSDK_rotate(int portIndex, int dir, int speed, int timeout_ms);`
+- 设置地址：`bool NuoyaSDK_setAddress(int portIndex, int address, int timeout_ms);`
+- 发送滚轴控制命令：`bool NuoyaSDK_SetAddr(int portIndex);`
 
 注：
 1. 发送控制指令后，驱动卡有应答报文，返回错误码为0x00时表示成功，其他值表示错误，错误码详细说明见下方错误码章节。超时时间表示接收报文的超时。
-2. 滚轴的速度变量计算方法为：速度值*10*2/辊筒减速比rpm
+2. 滚轴的速度变量计算方法为：速度值*10*2/辊筒减速比rpm。
+3. 控制滚筒转动和停止的逻辑是先设置参数，然后控制命令发送。
 
 ## 错误码
 允许存在多个错误码，每个错误码对应一个位
