@@ -3,7 +3,7 @@
  * @Author: BiChunkai 321521004@qq.com
  * @node: 兼容C、C++，linux版本
  * @Date: 2025-09-19 15:52:37
- * @LastEditTime: 2025-09-22 13:22:31
+ * @LastEditTime: 2025-09-22 13:51:40
  * @FilePath: /NuoYa_SDK/nuoya_sdk/nuoyaSDK.h
  * 
  * Copyright (c) 2025 by BiChunkai 321521004@qq.com, All Rights Reserved. 
@@ -89,6 +89,12 @@ DriverError NuoyaSDK_rotate(int portIndex, int dir, int speed, int timeout_ms);
  */
 void NuoyaSDK_runControl(int portIndex);
 
+/**
+ * @brief set port address
+ * @note default 1 addr,Set within 30 seconds after power-on
+ * @param portIndex port index
+ */
+bool NuoyaSDK_SetAddr(int portIndex);
 
 #ifdef __cplusplus
 }

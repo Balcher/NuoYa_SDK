@@ -2,7 +2,7 @@
  * @Description: 无锡诺亚自动化滚轴的控制
  * @Author: BiChunkai 321521004@qq.com
  * @Date: 2025-09-19 15:52:37
- * @LastEditTime: 2025-09-22 13:22:47
+ * @LastEditTime: 2025-09-22 13:53:04
  * @FilePath: /NuoYa_SDK/nuoya_sdk/nuoyaSDK.c
  *
  * Copyright (c) 2025 by BiChunkai 321521004@qq.com, All Rights Reserved.
@@ -14,7 +14,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <errno.h>
-#include <stdio.h>   // printf
+#include <stdio.h> // printf
 #include <string.h>
 
 int NuoyaSDK_Init(const char *port)
@@ -47,7 +47,7 @@ bool NuoyaSDK_Disconnect(int port)
 
 /**
  * @brief 读取完整一帧数据，超时返回已读取字节数
- * 
+ *
  * @param portIndex 端口索引
  * @param buf 接收数据缓存
  * @param len 接收数据长度
@@ -62,7 +62,7 @@ int read_frame(int portIndex, unsigned char *buf, int len, int timeout_ms)
 
     while (total < len)
     {
-        int n = comRead(portIndex, (char*)buf + total, len - total);
+        int n = comRead(portIndex, (char *)buf + total, len - total);
         if (n > 0)
         {
             total += n;
@@ -97,7 +97,7 @@ DriverError NuoyaSDK_stop(int portIndex, int timeout_ms)
     // for(int i=0;i<8;i++) printf("%02X ", send_data[i]);
     // printf("\n");
 
-    comWrite(portIndex, (const char*)send_data, sizeof(send_data));
+    comWrite(portIndex, (const char *)send_data, sizeof(send_data));
 
     unsigned char recv_data[4] = {0};
     int n = read_frame(portIndex, recv_data, sizeof(recv_data), timeout_ms);
@@ -128,8 +128,10 @@ DriverError NuoyaSDK_stop(int portIndex, int timeout_ms)
 
 DriverError NuoyaSDK_rotate(int portIndex, int dir, int speed, int timeout_ms)
 {
-    if(speed < 0) speed = 0;
-    if(speed > 127) speed = 127;
+    if (speed < 0)
+        speed = 0;
+    if (speed > 127)
+        speed = 127;
 
     unsigned char send_data[8] = {0};
     send_data[0] = 0x85;
@@ -143,24 +145,24 @@ DriverError NuoyaSDK_rotate(int portIndex, int dir, int speed, int timeout_ms)
     // for(int i=0;i<8;i++) printf("%02X ", send_data[i]);
     // printf("\n");
 
-    comWrite(portIndex, (const char*)send_data, sizeof(send_data));
+    comWrite(portIndex, (const char *)send_data, sizeof(send_data));
 
     unsigned char recv_data[4] = {0};
     int n = read_frame(portIndex, recv_data, sizeof(recv_data), timeout_ms);
 
-    if(n == sizeof(recv_data))
+    if (n == sizeof(recv_data))
     {
         // printf("Received frame: ");
         // for(int i=0;i<4;i++) printf("%02X ", recv_data[i]);
         // printf("\n");
         return (DriverError)recv_data[2]; // 第3字节错误码
     }
-    else if(n == 0)
+    else if (n == 0)
     {
         // printf("Connection closed by peer\n");
         return ERROR_CONNECTION_CLOSED;
     }
-    else if(n < 0)
+    else if (n < 0)
     {
         printf("Read error: %s\n", strerror(errno));
         return ERROR_READ_FAILED;
@@ -175,12 +177,37 @@ DriverError NuoyaSDK_rotate(int portIndex, int dir, int speed, int timeout_ms)
 void NuoyaSDK_runControl(int portIndex)
 {
     unsigned char send_data[8] = {0x8A, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
-
-    comWrite(portIndex, (const char*)send_data, sizeof(send_data)); 
+    comWrite(portIndex, (const char *)send_data, sizeof(send_data));
 }
 
+bool NuoyaSDK_SetAddr(int portIndex)
+{
+    unsigned char send_data[8] = {0xF5, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+    comWrite(portIndex, (const char *)send_data, sizeof(send_data));
+    unsigned char recv_data[4] = {0};
+    int n = read_frame(portIndex, recv_data, sizeof(recv_data), 1000);
+    if (n == sizeof(recv_data))
+    {
+        printf("Received frame: ");
+        for (int i = 0; i < 4; i++)
+            printf("%02X ", recv_data[i]);
+        printf("\n");
+
+        // 判断是否等于 F5 01 5A 5B
+        if (recv_data[0] == 0xF5 && recv_data[1] == 0x01 &&
+            recv_data[2] == 0x5A && recv_data[3] == 0x5B)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return false;
+}
 ///////////////////////////////////////////////////////////////////
-                        //  第一版用循环查看接受情况
+//  第一版用循环查看接受情况
 ///////////////////////////////////////////////////////////////////
 // bool Nuoya_move(int portIndex, int x, int y)
 // {
